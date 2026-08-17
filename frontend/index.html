@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Speech to Text</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Speech to Text</h1>
+      <button id="recordButton" class="record-button">Start Listening</button>
+
+      <p id="recordingIndicator" class="status hidden">Listening...</p>
+      <p id="loadingIndicator" class="status hidden">Transcribing...</p>
+      <p id="errorMessage" class="error hidden"></p>
+
+      <label for="transcription">Transcription</label>
+      <textarea id="transcription" rows="8" readonly placeholder="Your transcription will appear here..."></textarea>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
