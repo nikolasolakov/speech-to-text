@@ -5,8 +5,6 @@ from transcription.services import get_whisper_model
 
 
 class Command(BaseCommand):
-    help = "Loads Whisper model at startup so model download/init happens before requests."
-
     def handle(self, *args, **options):
         model_size = os.getenv("WHISPER_MODEL_SIZE", "small")
         self.stdout.write(f"Loading Whisper model ({model_size})...")

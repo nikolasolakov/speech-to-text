@@ -56,7 +56,7 @@ async function uploadAudio(blob) {
     if (!response.ok) {
       if (response.status === 504) {
         throw new Error(
-          "The server is still preparing Whisper (first run can take a few minutes). Please try again shortly."
+          "The server is still preparing Whisper. Please try again shortly."
         );
       }
 

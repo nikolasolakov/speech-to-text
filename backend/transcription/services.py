@@ -48,7 +48,6 @@ def get_whisper_model(model_size: str | None = None) -> WhisperModel:
             download_root = os.getenv("WHISPER_MODEL_DIR", "/models")
             cpu_threads = int(os.getenv("WHISPER_CPU_THREADS", "4"))
 
-            # Keep only one model resident at a time so a fallback load doesn't double memory usage.
             _models.clear()
             _models[cache_key] = WhisperModel(
                 model_size_or_path=cache_key,
@@ -72,8 +71,6 @@ def _hotwords_for(language: str) -> str | None:
 
 
 def _decode_kwargs() -> dict:
-    # Deterministic, single-pass decoding: no random sampling fallback and no drift from
-    # earlier (possibly wrong) segments influencing later ones, both of which hurt precision.
     return {
         "temperature": float(os.getenv("WHISPER_TEMPERATURE", "0.0")),
         "condition_on_previous_text": os.getenv("WHISPER_CONDITION_ON_PREVIOUS_TEXT", "false").lower() == "true",
@@ -87,8 +84,6 @@ def _decode_kwargs() -> dict:
 def _transcribe_with_model(file_path: str, model: WhisperModel, beam_size: int, allowed_languages: list[str]) -> str:
     decode_kwargs = _decode_kwargs()
 
-    # Try the known allowed languages explicitly first (in priority order) since auto-detect
-    # frequently misidentifies Macedonian as a related Slavic language on smaller models.
     for language in allowed_languages:
         segments, _info = model.transcribe(
             file_path,
@@ -108,7 +103,6 @@ def _transcribe_with_model(file_path: str, model: WhisperModel, beam_size: int, 
         if text:
             return text
 
-    # Fallback: let Whisper auto-detect the language when none of the allowed ones produced text.
     auto_segments, auto_info = model.transcribe(file_path, beam_size=beam_size, vad_filter=True, **decode_kwargs)
     auto_text = _extract_text(auto_segments)
     auto_lang = getattr(auto_info, "language", None)
